@@ -2,6 +2,8 @@ use reqwest::StatusCode;
 use serde_json::{json, Value};
 use thiserror::Error;
 
+use super::{Message, Role};
+
 pub struct OpenAIConfig {
     api_key: String,
     model: String,
@@ -18,15 +20,7 @@ impl OpenAIConfig {
     }
 }
 
-pub enum Role {
-    System,
-    User,
-}
 
-pub struct Message {
-    pub role: Role,
-    pub content: String,
-}
 
 pub struct OpenAIProvider {
     config: OpenAIConfig,

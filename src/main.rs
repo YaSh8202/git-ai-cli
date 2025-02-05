@@ -1,24 +1,11 @@
-use clap::{command, Parser, Subcommand};
+use clap::Parser;
+
+use cli::{Cli, Commands};
 
 mod git;
 mod llm;
+mod cli;
 
-#[derive(Parser)]
-#[command(name = "git-ai")]
-#[command(about = "AI Powered Cli tool for git commits")]
-struct Cli {
-    #[command(subcommand)]
-    command: Commands,
-}
-
-#[derive(Subcommand)]
-enum Commands {
-    Generate,
-    Explain {
-        #[arg(long)]
-        staged: bool,
-    },
-}
 
 #[tokio::main]
 async fn main() {
@@ -43,8 +30,8 @@ async fn run() {
 
             let llm = llm::openai::OpenAIProvider::new(client, config);
 
-            let system_message = llm::openai::Message {
-                role: llm::openai::Role::System,
+            let system_message = llm::Message {
+                role: llm::Role::System,
                 content: String::from(format! {
                     "You are a commit message generator that follows these rules:
                     1. Write in present tense
@@ -54,8 +41,8 @@ async fn run() {
                 }),
             };
 
-            let user_message = llm::openai::Message {
-                role: llm::openai::Role::User,
+            let user_message = llm::Message {
+                role: llm::Role::User,
                 content: diff,
             };
 
