@@ -1,36 +1,76 @@
-use clap::{command, Parser, Subcommand, };
+use clap::{command, Parser, Subcommand};
 
-
+mod git;
+mod llm;
 
 #[derive(Parser)]
-#[command(name="git-ai")]
-#[command(about="AI Powered Cli tool for git commits")]
-struct Cli{
+#[command(name = "git-ai")]
+#[command(about = "AI Powered Cli tool for git commits")]
+struct Cli {
     #[command(subcommand)]
-    command: Commands
+    command: Commands,
 }
 
-
 #[derive(Subcommand)]
-enum Commands{
-    Generate{
-        #[arg(long)]
-        staged: bool
-    },
-    Explain{
+enum Commands {
+    Generate,
+    Explain {
         #[arg(long)]
         staged: bool,
-    }
+    },
 }
 
 #[tokio::main]
 async fn main() {
-    let cli = Cli::parse();
+    run().await;
+}
 
-    match  cli.command {
-        Commands::Generate { staged } => {
-            println!("Generate command");
-            println!("Staged: {}", staged);
+async fn run() {
+    let cli = Cli::parse();
+    let client = reqwest::Client::new();
+    let git = git::GitHelper::new().unwrap();
+
+    match cli.command {
+        Commands::Generate => {
+            let diff = git.get_diff(true).unwrap();
+
+            // println!("Diff: {}", diff);
+
+            let config = llm::openai::OpenAIConfig::new(
+                "sk-**".to_string(),
+                None,
+            );
+
+            let llm = llm::openai::OpenAIProvider::new(client, config);
+
+            let system_message = llm::openai::Message {
+                role: llm::openai::Role::System,
+                content: String::from(format! {
+                    "You are a commit message generator that follows these rules:
+                    1. Write in present tense
+                    2. Be concise and direct
+                    3. Output only the commit message without any explanations
+                    4. Follow the format: <type>(<optional scope>): <commit message>"
+                }),
+            };
+
+            let user_message = llm::openai::Message {
+                role: llm::openai::Role::User,
+                content: diff,
+            };
+
+            let messages = vec![system_message, user_message];
+
+            let response = llm.complete(&messages).await;
+
+            match response {
+                Ok(commit_message) => {
+                    println!("Commit message: {}", commit_message);
+                }
+                Err(e) => {
+                    println!("Error: {}", e);
+                }
+            }
         }
         Commands::Explain { staged } => {
             println!("Explain command");
