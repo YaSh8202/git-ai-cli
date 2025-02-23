@@ -1,18 +1,18 @@
-use super::{LLMComplete, LLMError, Message, Role};
 use async_trait::async_trait;
 use reqwest::StatusCode;
 use serde_json::{json, Value};
-use thiserror::Error;
 
-pub struct OpenAIConfig {
+use super::{LLMComplete, LLMError, Message, Role};
+
+pub struct AnthropicConfig {
     api_key: String,
     model: String,
     api_base_url: String,
 }
 
-impl OpenAIConfig {
+impl AnthropicConfig {
     pub fn new(api_key: String, model: Option<String>) -> Self {
-        OpenAIConfig {
+        AnthropicConfig {
             api_key,
             model: model.unwrap_or("gpt-4o-mini".to_string()),
             api_base_url: "https://api.openai.com/v1/chat/completions".to_string(),
@@ -20,38 +20,43 @@ impl OpenAIConfig {
     }
 }
 
-pub struct OpenAIProvider {
-    config: OpenAIConfig,
+pub struct AnthropicProvider {
+    config: AnthropicConfig,
     client: reqwest::Client,
 }
 
-#[derive(Error, Debug)]
-#[error("{0}")]
-pub struct AIPromptError(String);
-
-impl OpenAIProvider {
-    pub fn new(client: reqwest::Client, config: OpenAIConfig) -> Self {
-        OpenAIProvider { client, config }
+impl AnthropicProvider {
+    pub fn new(client: reqwest::Client, config: AnthropicConfig) -> Self {
+        AnthropicProvider { client, config }
     }
 
-    async fn complete(&self, messages: &[Message]) -> Result<String, LLMError> {
+    pub async fn complete(&self, messages: &[Message]) -> Result<String, LLMError> {
+        let system_prompt = messages
+            .iter()
+            .find(|message| message.role == Role::System)
+            .map(|message| message.content.clone())
+            .unwrap_or("".to_string());
+
+        let user_mesage = messages.get(1).ok_or(LLMError::SomeError)?;
+
         let payload = json!({
             "model": self.config.model,
-            "messages": messages.iter().map(|message| {
-                json!({
-                    "role": match message.role {
-                        Role::System => "system",
-                        Role::User => "user",
-                    },
-                    "content": message.content,
-                })
-            }).collect::<Vec<Value>>(),
+            "max_tokens": 4096,
+            "system": system_prompt,
+            "messages": [
+                {
+                    "role": "user",
+                    "content": user_mesage.content
+                }
+            ]
         });
 
         let response = self
             .client
             .post(&self.config.api_base_url)
-            .header("Authorization", format!("Bearer {}", self.config.api_key))
+            .header("x-api-key", &self.config.api_key)
+            .header("anthropic-version", "2023-06-01")
+            .header("Content-Type", "application/json")
             .json(&payload)
             .send()
             .await?;
@@ -63,11 +68,11 @@ impl OpenAIProvider {
                 let response_json: Value = response.json().await?;
 
                 let content = response_json
-                    .get("choices")
-                    .and_then(|choices| choices.get(0))
+                    .get("content")
+                    .and_then(|content| content.get(0))
                     .and_then(|choice| choice.get("message"))
-                    .and_then(|message| message.get("content"))
-                    .and_then(|content| content.as_str())
+                    .and_then(|message| message.get("text"))
+                    .and_then(|text| text.as_str())
                     .ok_or(LLMError::NoCompletionChoice)?;
 
                 Ok(content.to_string())
@@ -89,7 +94,7 @@ impl OpenAIProvider {
 }
 
 #[async_trait]
-impl LLMComplete for OpenAIProvider {
+impl LLMComplete for AnthropicProvider {
     async fn complete(&self, messages: &[Message]) -> Result<String, LLMError> {
         self.complete(&messages).await
     }

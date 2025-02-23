@@ -1,0 +1,16 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "gitai",
+            "type": "lldb",
+            "request": "launch",
+            "program": "${workspaceFolder}/target/debug/gitai",
+            "args": ["generate"],
+            "cwd": "${workspaceFolder}",
+            "env": {},
+            "stdio": [],
+            "sourceLanguages": ["rust"]
+        }
+    ]
+}
