@@ -4,6 +4,7 @@ use reqwest::StatusCode;
 use serde_json::{json, Value};
 use thiserror::Error;
 
+#[derive(Clone)]
 pub struct OpenAIConfig {
     api_key: String,
     model: String,
@@ -20,6 +21,7 @@ impl OpenAIConfig {
     }
 }
 
+#[derive(Clone)]
 pub struct OpenAIProvider {
     config: OpenAIConfig,
     client: reqwest::Client,
@@ -93,4 +95,6 @@ impl LLMComplete for OpenAIProvider {
     async fn complete(&self, messages: &[Message]) -> Result<String, LLMError> {
         self.complete(&messages).await
     }
+
+
 }

@@ -20,7 +20,7 @@ pub struct Message {
 
 #[derive(Error, Debug)]
 #[error("{0}")]
-pub struct AIPromptError(String);
+pub struct AIPromptError(pub String);
 
 #[derive(Error, Debug)]
 pub enum LLMError {
@@ -50,25 +50,41 @@ impl From<GitAIError> for LLMError {
 }
 
 #[async_trait]
-pub trait LLMComplete {
+pub trait LLMComplete: Sync + Send + Clone {
     async fn complete(&self, messages: &[Message]) -> Result<String, LLMError>;
+}
+
+#[derive(Clone)]
+pub enum LLMProvider {
+    Openai(OpenAIProvider),
+    Anthropic(AnthropicProvider),
+}
+
+#[async_trait]
+impl LLMComplete for LLMProvider {
+    async fn complete(&self, messages: &[Message]) -> Result<String, LLMError> {
+        match self {
+            LLMProvider::Openai(provider) => provider.complete(messages).await,
+            LLMProvider::Anthropic(provider) => provider.complete(messages).await,
+        }
+    }
 }
 
 pub fn get_llm(
     provider: LLMProviderType,
     model: Option<String>,
     api_key: Option<String>,
-) -> Result<Box<dyn LLMComplete>, GitAIError> {
+) -> Result<LLMProvider, GitAIError> {
     match provider {
         LLMProviderType::Openai => {
             let config = openai::OpenAIConfig::new(api_key.unwrap(), model);
             let client = reqwest::Client::new();
-            Ok(Box::new(OpenAIProvider::new(client, config)))
+            Ok(LLMProvider::Openai(OpenAIProvider::new(client, config)))
         }
         LLMProviderType::Anthropic => {
             let config = anthropic::AnthropicConfig::new(api_key.unwrap(), model);
             let client = reqwest::Client::new();
-            Ok(Box::new(AnthropicProvider::new(client, config)))
+            Ok(LLMProvider::Anthropic(AnthropicProvider::new(client, config)))
         }
     }
 }

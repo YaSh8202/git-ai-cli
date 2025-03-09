@@ -2,13 +2,11 @@ use std::str::FromStr;
 
 use clap::{command, Parser, Subcommand, ValueEnum};
 
-
 #[derive(Parser)]
 #[command(name = "gitai")]
 #[command(about = "AI Powered Cli tool for git commits")]
 pub struct Cli {
-
-    #[arg(value_enum, short='p', long="provider")]
+    #[arg(value_enum, short = 'p', long = "provider")]
     pub provider: Option<LLMProviderType>,
 
     #[arg(short, long)]
@@ -24,7 +22,7 @@ pub struct Cli {
 pub enum LLMProviderType {
     Openai,
     // Phind,
-    Anthropic
+    Anthropic,
 }
 
 impl FromStr for LLMProviderType {
@@ -44,6 +42,13 @@ impl FromStr for LLMProviderType {
 pub enum Commands {
     Generate,
     Explain {
+        #[arg(group = "target")]
+        reference: Option<String>,
+
+        #[arg(long, group = "target")]
+        diff: bool,
+
+        /// use staged changes
         #[arg(long)]
         staged: bool,
     },

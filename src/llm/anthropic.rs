@@ -3,7 +3,7 @@ use reqwest::StatusCode;
 use serde_json::{json, Value};
 
 use super::{LLMComplete, LLMError, Message, Role};
-
+#[derive(Clone)]
 pub struct AnthropicConfig {
     api_key: String,
     model: String,
@@ -19,7 +19,7 @@ impl AnthropicConfig {
         }
     }
 }
-
+#[derive(Clone)]
 pub struct AnthropicProvider {
     config: AnthropicConfig,
     client: reqwest::Client,
