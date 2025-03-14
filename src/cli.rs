@@ -1,5 +1,5 @@
 use std::str::FromStr;
-
+use crate::commit_reference::CommitReference;
 use clap::{command, Parser, Subcommand, ValueEnum};
 
 #[derive(Parser)]
@@ -42,8 +42,8 @@ impl FromStr for LLMProviderType {
 pub enum Commands {
     Generate,
     Explain {
-        #[arg(group = "target")]
-        reference: Option<String>,
+        #[arg(group = "target", value_parser = clap::value_parser!(CommitReference))]
+        reference: Option<CommitReference>,
 
         #[arg(long, group = "target")]
         diff: bool,

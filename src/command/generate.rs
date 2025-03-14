@@ -4,12 +4,11 @@ use super::AIPrompt;
 use super::Command;
 use crate::git_entity::diff::Diff;
 use crate::git_entity::GitEntity;
-use crate::llm::{Message, Role, AIPromptError, LLMError,LLMProvider};
+use crate::llm::{AIPromptError, LLMProvider, Message, Role};
 use indoc::{formatdoc, indoc};
 
 use crate::error::GitAIError;
 use async_trait::async_trait;
-// use indoc::formatdoc;
 
 fn default_commit_types() -> String {
     indoc! {r#"
@@ -32,9 +31,6 @@ fn default_commit_types() -> String {
 
 pub struct GenerateCommand {
     pub git_entity: GitEntity,
-    // pub context: Option<String>,
-    // pub draft_config: DraftConfig,
-    // diff: String,
 }
 
 // #[async_trait]

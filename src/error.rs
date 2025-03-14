@@ -1,6 +1,6 @@
 use crate::{
     git_entity::{commit::CommitError, diff::DiffError},
-    // provider::ProviderError,
+    llm::LLMError,
 };
 use std::io;
 use thiserror::Error;
@@ -34,6 +34,6 @@ pub enum GitAIError {
     #[error("{0}")]
     CommandError(String),
 
-    // #[error(transparent)]
-    // ProviderError(#[from] ProviderError),
+    #[error(transparent)]
+    LLMError(#[from] LLMError),
 }

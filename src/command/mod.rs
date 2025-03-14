@@ -1,12 +1,9 @@
-use crate::{
-    error::GitAIError,
-    git::Commit,
-    git_entity::diff::Diff,
-    llm::{LLMComplete, LLMError,LLMProvider},
-};
+use crate::{error::GitAIError, git_entity::diff::Diff, llm::LLMProvider};
 use async_trait::async_trait;
-mod generate;
 use crate::git_entity::GitEntity;
+
+mod generate;
+mod explain;
 
 pub struct GitAICommand {
     provider: LLMProvider,
@@ -23,13 +20,16 @@ impl GitAICommand {
     }
 
     pub async fn execute(&self, command_type: CommandType) -> Result<(), GitAIError> {
-        command_type.create_command()?.execute(self.provider.clone()).await
+        command_type
+            .create_command()?
+            .execute(self.provider.clone())
+            .await
     }
 }
 
 pub enum CommandType {
     Generate,
-    // Explain { git_entity: GitEntity },
+    Explain { git_entity: GitEntity },
 }
 
 impl CommandType {
@@ -38,10 +38,7 @@ impl CommandType {
             CommandType::Generate => Ok(Box::new(generate::GenerateCommand {
                 git_entity: GitEntity::Diff(Diff::from_working_tree(true).unwrap()),
             })),
-
-            // CommandType::Explain { git_entity } => {
-            //     Ok(Box::new(generate::GenerateCommand::new(git_entity)))
-            // }
+            CommandType::Explain { git_entity } => Ok(Box::new(explain::ExplainCommand { git_entity })),
         }
     }
 }
