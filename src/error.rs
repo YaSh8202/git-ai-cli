@@ -16,23 +16,18 @@ pub enum GitAIError {
     #[error("Missing API key for {0}, use --api-key or GITAI_API_KEY env variable")]
     MissingApiKey(String),
 
-    #[error("Missing Model for {0}, use --model or GITAI_MODEL env variable")]
-    MissingModel(String),
-
+    // #[error("Missing Model for {0}, use --model or GITAI_MODEL env variable")]
+    // MissingModel(String),
     #[error("Invalid arguments: {0}")]
     InvalidArguments(String),
 
-    #[error("Invalid configuration: {0}")]
-    InvalidConfiguration(String),
-
+    // #[error("Invalid configuration: {0}")]
+    // InvalidConfiguration(String),
     #[error(transparent)]
     IoError(#[from] io::Error),
 
     #[error(transparent)]
     Utf8Error(#[from] std::string::FromUtf8Error),
-
-    #[error("{0}")]
-    CommandError(String),
 
     #[error(transparent)]
     LLMError(#[from] LLMError),

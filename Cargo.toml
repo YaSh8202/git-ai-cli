@@ -7,10 +7,11 @@ edition = "2021"
 anyhow = "1.0.95"
 async-trait = "0.1.86"
 clap = {version = "4.5.27", features = ["derive","env"]}
-git2 = "0.20.0"
 indoc = "2.0.6"
 reqwest = {version = "0.12.12", features = ["json"]}
 serde = { version = "1.0", features = ["derive"] }
 serde_json = "1.0.138"
+spinoff = "0.8.0"
+termimad = "0.31.2"
 thiserror = "2.0.11"
 tokio = {version = "1.43.0", features = ["full"]}

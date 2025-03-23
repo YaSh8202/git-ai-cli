@@ -77,14 +77,18 @@ pub fn get_llm(
 ) -> Result<LLMProvider, GitAIError> {
     match provider {
         LLMProviderType::Openai => {
-            let config = openai::OpenAIConfig::new(api_key.unwrap(), model);
+            let api_key = api_key.ok_or(GitAIError::MissingApiKey("OpenAI".to_string()))?;
+            let config = openai::OpenAIConfig::new(api_key, model);
             let client = reqwest::Client::new();
             Ok(LLMProvider::Openai(OpenAIProvider::new(client, config)))
         }
         LLMProviderType::Anthropic => {
-            let config = anthropic::AnthropicConfig::new(api_key.unwrap(), model);
+            let api_key = api_key.ok_or(GitAIError::MissingApiKey("Anthropic".to_string()))?;
+            let config = anthropic::AnthropicConfig::new(api_key, model);
             let client = reqwest::Client::new();
-            Ok(LLMProvider::Anthropic(AnthropicProvider::new(client, config)))
+            Ok(LLMProvider::Anthropic(AnthropicProvider::new(
+                client, config,
+            )))
         }
     }
 }

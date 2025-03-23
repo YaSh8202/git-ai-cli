@@ -5,7 +5,9 @@ use super::Command;
 use crate::git_entity::diff::Diff;
 use crate::git_entity::GitEntity;
 use crate::llm::{AIPromptError, LLMProvider, Message, Role};
+use crate::util::print_markdown;
 use indoc::{formatdoc, indoc};
+use spinoff::{spinners, Color, Spinner};
 
 use crate::error::GitAIError;
 use async_trait::async_trait;
@@ -87,6 +89,14 @@ impl ExplainCommand {
 #[async_trait]
 impl Command for ExplainCommand {
     async fn execute(&self, llm: LLMProvider) -> Result<(), GitAIError> {
+        print_markdown(self.git_entity.format_static_details())?;
+
+        let mut spinner = Spinner::new(
+            spinners::Dots,
+            "Generating summary...".to_string(),
+            Color::Green,
+        );
+
         let ai_prompt = self.get_ai_prompt().unwrap();
 
         let system_message = Message {
@@ -103,9 +113,11 @@ impl Command for ExplainCommand {
 
         let response = llm.complete(&messages).await;
 
+        spinner.stop();
+
         match response {
-            Ok(commit_message) => {
-                println!("Commit message: {}", commit_message);
+            Ok(response) => {
+                print_markdown(response)?;
             }
             Err(e) => {
                 println!("Error: {}", GitAIError::from(e));

@@ -1,8 +1,7 @@
 use crate::cli::LLMProviderType;
-use serde::{Deserialize, Deserializer, Serialize};
-use serde_json::from_reader;
 use crate::error::GitAIError;
 use crate::Cli;
+use serde::{Deserialize, Deserializer};
 
 #[derive(Debug, Deserialize)]
 pub struct GitAIConfig {
@@ -42,16 +41,15 @@ where
     s.parse().map_err(serde::de::Error::custom)
 }
 
-
 impl GitAIConfig {
-    pub fn build(cli: &Cli) -> Result<Self,GitAIError>{
+    pub fn build(cli: &Cli) -> Result<Self, GitAIError> {
         let default = GitAIConfig::default();
 
         let provider = cli.provider.as_ref().cloned().unwrap_or(default.provider);
         let model = cli.model.clone().or(default.model);
         let api_key = cli.api_key.clone().or(default.api_key);
 
-        Ok(GitAIConfig{
+        Ok(GitAIConfig {
             provider,
             model,
             api_key,
@@ -61,7 +59,7 @@ impl GitAIConfig {
 
 impl Default for GitAIConfig {
     fn default() -> Self {
-        GitAIConfig{
+        GitAIConfig {
             provider: default_provider(),
             model: default_model(),
             api_key: default_api_key(),

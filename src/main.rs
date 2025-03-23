@@ -17,6 +17,7 @@ mod config;
 mod error;
 mod git_entity;
 mod llm;
+mod util;
 
 #[tokio::main]
 async fn main() {

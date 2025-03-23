@@ -14,12 +14,11 @@ pub enum GitEntity {
 impl GitEntity {
     pub fn format_static_details(&self) -> String {
         match self {
-            GitEntity::Commit(commit) => formatdoc! {"
-                # Entity: Commit
-                `commit {hash}` | {author} <{email}> | {date}
+            GitEntity::Commit(commit) => formatdoc! {"## Entity: Commit
+`commit {hash}` | {author} <{email}> | {date}
 
-                {message}
-                -----",
+{message}
+-----",
                 hash = commit.full_hash,
                 author = commit.author_name,
                 email = commit.author_email,

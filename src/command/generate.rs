@@ -102,7 +102,7 @@ impl Command for GenerateCommand {
                 println!("Commit message: {}", commit_message);
             }
             Err(e) => {
-                // println!("Error: {}", GitAIError::from(e));
+                println!("Error: {}", GitAIError::from(e));
             }
         }
 
