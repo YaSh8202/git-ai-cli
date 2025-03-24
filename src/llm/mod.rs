@@ -2,10 +2,14 @@ use crate::{cli::LLMProviderType, error::GitAIError};
 use anthropic::AnthropicProvider;
 use async_trait::async_trait;
 use openai::OpenAIProvider;
+use phind::PhindProvider;
+use grok::GroqProvider;
 use thiserror::Error;
 
 pub mod anthropic;
 pub mod openai;
+pub mod phind;
+pub mod grok;
 
 #[derive(Debug, PartialEq)]
 pub enum Role {
@@ -58,6 +62,8 @@ pub trait LLMComplete: Sync + Send + Clone {
 pub enum LLMProvider {
     Openai(OpenAIProvider),
     Anthropic(AnthropicProvider),
+    Phind(PhindProvider),
+    Grok(GroqProvider),
 }
 
 #[async_trait]
@@ -66,6 +72,8 @@ impl LLMComplete for LLMProvider {
         match self {
             LLMProvider::Openai(provider) => provider.complete(messages).await,
             LLMProvider::Anthropic(provider) => provider.complete(messages).await,
+            LLMProvider::Phind(provider) => provider.complete(messages).await,
+            LLMProvider::Grok(provider) => provider.complete(messages).await,
         }
     }
 }
@@ -89,6 +97,18 @@ pub fn get_llm(
             Ok(LLMProvider::Anthropic(AnthropicProvider::new(
                 client, config,
             )))
+        }
+        LLMProviderType::Phind => {
+            let config = phind::PhindConfig::new(model);
+            let client = reqwest::Client::new();
+            Ok(LLMProvider::Phind(PhindProvider::new(client, config)))
+        }
+        LLMProviderType::Grok => {
+            let api_key = api_key.ok_or(GitAIError::MissingApiKey
+            ("Grok".to_string()))?;
+            let config = grok::GroqConfig::new(api_key, model);
+            let client = reqwest::Client::new();
+            Ok(LLMProvider::Grok(GroqProvider::new(client, config)))
         }
     }
 }

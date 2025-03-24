@@ -26,7 +26,7 @@ fn default_provider() -> LLMProviderType {
     std::env::var("GITAI_PROVIDER")
         .unwrap_or_else(|_| "phind".to_string())
         .parse()
-        .unwrap_or(LLMProviderType::Openai)
+        .unwrap_or(LLMProviderType::Phind)
 }
 
 fn default_api_key() -> Option<String> {

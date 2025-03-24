@@ -21,8 +21,9 @@ pub struct Cli {
 #[derive(Copy, Clone, PartialEq, Eq, ValueEnum, Debug)]
 pub enum LLMProviderType {
     Openai,
-    // Phind,
+    Phind,
     Anthropic,
+    Grok
 }
 
 impl FromStr for LLMProviderType {
