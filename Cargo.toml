@@ -1,8 +1,8 @@
 [package]
 name = "gitai"
-version = "0.1.0"
+version = "0.1.1"
 edition = "2021"
-license-file = "LICENSE"
+license = "MIT"
 description = "GitAI is a command-line tool powered by AI that makes your Git workflow smoother and easier. It helps you create commit messages, understand changes, and manage your repository—all without needing an API key."
 repository = "https://github.com/YaSh8202/git-ai-cli"
 readme = "README.md"
@@ -13,6 +13,8 @@ categories = ["command-line-interface", "development-tools"]
 anyhow = "1.0.95"
 async-trait = "0.1.86"
 clap = {version = "4.5.27", features = ["derive","env"]}
+dialoguer = "0.11.0"
+dirs = "5.0.1"
 indoc = "2.0.6"
 reqwest = {version = "0.12.12", features = ["json"]}
 serde = { version = "1.0", features = ["derive"] }

@@ -54,4 +54,5 @@ pub enum Commands {
         #[arg(long)]
         staged: bool,
     },
+    Configure,
 }

@@ -72,5 +72,9 @@ async fn run() -> Result<(), GitAIError> {
 
             Ok(())
         }
+        Commands::Configure => {
+            command.execute(CommandType::Configure).await?;
+            Ok(())
+        }
     }
 }

@@ -23,6 +23,9 @@ pub enum GitAIError {
 
     // #[error("Invalid configuration: {0}")]
     // InvalidConfiguration(String),
+    #[error("Configuration error: {0}")]
+    ConfigError(String),
+
     #[error(transparent)]
     IoError(#[from] io::Error),
 
@@ -31,4 +34,10 @@ pub enum GitAIError {
 
     #[error(transparent)]
     LLMError(#[from] LLMError),
+}
+
+impl From<dialoguer::Error> for GitAIError {
+    fn from(err: dialoguer::Error) -> Self {
+        GitAIError::ConfigError(format!("Interactive prompt error: {}", err))
+    }
 }

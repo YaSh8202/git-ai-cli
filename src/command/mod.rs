@@ -4,6 +4,7 @@ use crate::git_entity::GitEntity;
 
 mod generate;
 mod explain;
+mod configure;
 
 pub struct GitAICommand {
     provider: LLMProvider,
@@ -30,6 +31,7 @@ impl GitAICommand {
 pub enum CommandType {
     Generate,
     Explain { git_entity: GitEntity },
+    Configure,
 }
 
 impl CommandType {
@@ -39,6 +41,7 @@ impl CommandType {
                 git_entity: GitEntity::Diff(Diff::from_working_tree(true).unwrap()),
             })),
             CommandType::Explain { git_entity } => Ok(Box::new(explain::ExplainCommand { git_entity })),
+            CommandType::Configure => Ok(Box::new(configure::ConfigureCommand {})),
         }
     }
 }
