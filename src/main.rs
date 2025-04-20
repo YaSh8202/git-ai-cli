@@ -35,8 +35,6 @@ async fn run() -> Result<(), GitAIError> {
         Err(e) => return Err(e),
     };
 
-    println!("api-key: {:?}", config.api_key);
-
     let llm = get_llm(config.provider, config.model, config.api_key).unwrap();
     let command = GitAICommand::new(llm);
 
@@ -76,11 +74,3 @@ async fn run() -> Result<(), GitAIError> {
         }
     }
 }
-
-// fn read_from_stdin() -> Result<String, GitAIError> {
-//     let mut buffer = String::new();
-//     std::io::stdin().read_to_string(&mut buffer)?;
-
-//     eprintln!("Reading commit SHA from stdin: '{}'", buffer.trim());
-//     Ok(buffer)
-// }

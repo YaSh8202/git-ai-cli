@@ -32,8 +32,9 @@ impl FromStr for LLMProviderType {
     fn from_str(s: &str) -> Result<Self, Self::Err> {
         match s.to_lowercase().as_str() {
             "openai" => Ok(LLMProviderType::Openai),
-            // "phind" => Ok(LLMProviderType::Phind),
+            "phind" => Ok(LLMProviderType::Phind),
             "anthropic" => Ok(LLMProviderType::Anthropic),
+            "grok" => Ok(LLMProviderType::Grok),
             _ => Err("Invalid provider".to_string()),
         }
     }

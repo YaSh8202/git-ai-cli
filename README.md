@@ -1,14 +1,13 @@
 # GitAI
 
-A command-line tool that uses AI to streamline your git workflow - from generating commit messages to explaining complex changes, all without requiring an API key.
+GitAI is a command-line tool powered by AI that makes your Git workflow smoother and easier. It helps you create commit messages, understand changes, and manage your repository—all without needing an API key.
 
+## Features ✨
 
-## Features 🔅
-
-- **Smart Commit Messages**: Generate conventional commit messages for your staged changes
-- **Git History Insights**: Understand what changed in any commit, branch, or your current work
-- **Zero Config**: Works instantly without an API key, using Phind by default
-- **Flexible**: Works with any git workflow and supports multiple AI providers
+- **Smart Commit Messages:** Automatically generates clear and standard commit messages based on your staged changes.
+- **Git History Insights:** Easily explains the changes in commits, branches, or your current work.
+- **Zero Configuration:** Instantly usable without setup or API keys—uses Phind AI by default.
+- **Flexible:** Fits smoothly into any Git workflow and supports multiple AI providers.
 
 ## Getting Started 🔅
 

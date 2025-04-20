@@ -2,6 +2,12 @@
 name = "gitai"
 version = "0.1.0"
 edition = "2021"
+license-file = "LICENSE"
+description = "GitAI is a command-line tool powered by AI that makes your Git workflow smoother and easier. It helps you create commit messages, understand changes, and manage your repository—all without needing an API key."
+repository = "https://github.com/YaSh8202/git-ai-cli"
+readme = "README.md"
+keywords = ["git", "ai", "cli", "command-line", "tool"]
+categories = ["command-line-interface", "development-tools"]
 
 [dependencies]
 anyhow = "1.0.95"
